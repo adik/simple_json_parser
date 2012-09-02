@@ -123,14 +123,38 @@ finish:
 	return 1;
 }
 
-
+/*
+ *  Calculate token size
+ */
 size_t json_token_size(json_parser_t *p, json_token_t *tok) {
 	return tok->right - tok->left;
 }
 
-void * json_get_token(json_parser_t *p, json_token_t *tok, char *buff, size_t len) {
+/*
+ *  Copy token value to buffer
+ */
+void *json_get_token(json_parser_t *p, json_token_t *tok, char *buff, size_t len) {
 	memcpy(buff, (char *)(tok->left), len);
 	buff[len] = '\0';
 }
 
+/*
+ * Return reference to the finded token
+ */
+json_token_t *json_find_token(json_parser_t *p, char *str) {
 
+	char *start_addr;
+
+	if ( !(start_addr = strstr(p->data, str)) )
+		return 0;
+
+	size_t addr = (size_t)start_addr + strlen(str);
+
+	// find token
+	for (int i=0; i<JSON_MAX_TOKENS; i += 2 ) {
+		if ( p->tokens[i].left == addr ) {
+			return &p->tokens[i];
+		}
+	}
+	return 0;
+}

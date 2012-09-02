@@ -41,31 +41,23 @@ void parse_dump() {
 
 
 
-void var_get( json_parser_t *p, char *str) {
-
-	char *start_addr = strstr (p->data, str);
-	char *value;
-	int   m;
-
-	// find token
-	for (int i=1; i<JSON_MAX_TOKENS; i += 2 ) {
-		if ( jparser.tokens[i].left == (size_t)start_addr ) {
-			size_t size = json_token_size(&jparser, &jparser.tokens[i+1]);
-			value = (char*) malloc(size-1);
-			json_get_token(&jparser, &jparser.tokens[i+1], value, size);
-			cout << value;
-			free (value);
-			break;
-		}
-	}
-	cout << endl;
-}
-
 void recv_data(char chr) {
+
+	json_token_t 	*token;
+	size_t		 	size;
+	char 		 	*value;
+
 	if ( json_parse(&jparser, chr) ) {
 		parse_dump();
-		var_get(&jparser, "event");
-		var_get(&jparser, "data");
+
+		if ( (token = json_find_token(&jparser, "event")) ) {
+			size = json_token_size(&jparser, token);
+			value = (char*) malloc(size);
+			json_get_token(&jparser, token, value, size);
+
+			cout << "get_value:" << value << endl;
+			free(value);
+		}
 	}
 }
 

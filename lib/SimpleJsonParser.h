@@ -84,9 +84,9 @@ void json_init(json_parser_t *parser);
 void json_fill_token(json_token_t *& ptoken, size_t addr) ;
 int  json_parse(json_parser_t *p, char chr);
 
-size_t 	json_token_size(json_parser_t *p, json_token_t *tok);
-void 	*json_get_token(json_parser_t *p, json_token_t *tok, char *buff, size_t len);
-
+void 		 *json_get_token(json_parser_t *p, json_token_t *tok, char *buff, size_t len);
+size_t 		  json_token_size(json_parser_t *p, json_token_t *tok);
+json_token_t *json_find_token(json_parser_t *p, char *str);
 
 
 #endif /* Simple_Json_Parser_H_ */
