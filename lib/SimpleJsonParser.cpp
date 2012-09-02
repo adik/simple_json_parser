@@ -30,9 +30,6 @@
  *
  */
 void json_init(json_parser_t *p) {
-	p->pdata  = &p->data[0];
-	p->ptoken = &p->tokens[0];
-
 	json_clean_tokens(p);
 }
 
@@ -46,6 +43,8 @@ void json_clean_tokens(json_parser_t *p) {
 		p->tokens[i].right  = 0;
 	}
 	p->data[0] = '\0';
+	p->pdata  = &p->data[0];
+	p->ptoken = &p->tokens[0];
 }
 
 
@@ -89,7 +88,7 @@ int json_parse(json_parser_t *p, char chr) {
 				// FIXIT:
 				if (p->level >= JSON_MAX_DEPTH){
 					if ( json_fill_buff_index >= JSON_MAX_DATA_BUFFER)
-						goto skip;
+						goto error;
 					*p->pdata++ = chr;;
 				}
 
@@ -132,7 +131,7 @@ int json_parse(json_parser_t *p, char chr) {
 find:
 	// buffer overflow
 	if (json_fill_buff_index >= JSON_MAX_DATA_BUFFER)
-		goto skip;
+		goto error;
 
 	*p->pdata++ = chr;
 
@@ -141,8 +140,9 @@ skip:
 	return 0;
 
 // error
-/*error:
-	return -1;*/
+error:
+	json_clean_tokens(p);
+	return 0;
 
 // parse finished
 finish:

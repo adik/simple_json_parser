@@ -54,22 +54,19 @@ void recv_data(char chr) {
 			size = json_token_size(&jparser, token);
 			value = (char*) malloc(size);
 			json_get_token(&jparser, token, value, size);
-
 			cout << "get_value:" << value << endl;
 			free(value);
 		}
+
+		json_clean_tokens(&jparser);
 	}
 }
 
 /***********************************************************/
 
 int main() {
-	const char *pt = "Host: Server\r\nType: anything\r\n\r\n "
-					 "{"
-					  "\"data\": { \"t1\" : \"t2\" }, "
-					  "\"event\":\"push:heartbet\", "
-					  "\"data\": { \"t3\" : 1123 }, "
-					  "\"status\":\"ok\" }";
+	const char json[] = "{\"event\":\"test\",\"data\":\"PRIVET\",\"channel\":\"channel_1\"}";
+	const char *pt = json;
 
 	json_init(&jparser);
 
@@ -77,6 +74,21 @@ int main() {
 		recv_data(*pt);
 		pt++;
 	}
+
+	pt = &json[0];
+
+	while (*pt) {
+		recv_data(*pt);
+		pt++;
+	}
+
+	pt = &json[0];
+
+	while (*pt) {
+		recv_data(*pt);
+		pt++;
+	}
+
 
 	return 0;
 }
