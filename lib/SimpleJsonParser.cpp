@@ -24,13 +24,34 @@
  */
 #include <SimpleJsonParser.h>
 
+#define json_fill_buff_index (((size_t)p->pdata - (size_t)&p->data[0]))
 
+/*
+ *
+ */
+void json_init(json_parser_t *p) {
+	p->pdata  = &p->data[0];
+	p->ptoken = &p->tokens[0];
 
-void json_init(json_parser_t *parser) {
-	parser->pdata  = parser->data;
-	parser->ptoken = parser->tokens;
+	json_clean_tokens(p);
 }
 
+/*
+ *  Clean buffers
+ */
+void json_clean_tokens(json_parser_t *p) {
+// find token
+	for (int i=0; i<JSON_MAX_TOKENS; ++i ) {
+		p->tokens[i].left 	= 0;
+		p->tokens[i].right  = 0;
+	}
+	p->data[0] = '\0';
+}
+
+
+/*
+ *
+ */
 void json_fill_token(json_token_t *& ptoken, size_t addr) {
 	ptoken->right = addr;
 	ptoken++;
@@ -66,8 +87,11 @@ int json_parse(json_parser_t *p, char chr) {
 			case '}':
 
 				// FIXIT:
-				if (p->level >= JSON_MAX_DEPTH)
+				if (p->level >= JSON_MAX_DEPTH){
+					if ( json_fill_buff_index >= JSON_MAX_DATA_BUFFER)
+						goto skip;
 					*p->pdata++ = chr;;
+				}
 
 				p->level--;
 				// update start group right reference
@@ -106,11 +130,19 @@ int json_parse(json_parser_t *p, char chr) {
 		goto skip;
 
 find:
+	// buffer overflow
+	if (json_fill_buff_index >= JSON_MAX_DATA_BUFFER)
+		goto skip;
+
 	*p->pdata++ = chr;
 
 // wait next character
 skip:
 	return 0;
+
+// error
+/*error:
+	return -1;*/
 
 // parse finished
 finish:

@@ -81,7 +81,7 @@ struct json_parser_t {
 };
 
 void json_init(json_parser_t *parser);
-void json_fill_token(json_token_t *& ptoken, size_t addr) ;
+void json_clean_tokens(json_parser_t *p);
 int  json_parse(json_parser_t *p, char chr);
 
 void 		 *json_get_token(json_parser_t *p, json_token_t *tok, char *buff, size_t len);

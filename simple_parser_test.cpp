@@ -47,7 +47,7 @@ void recv_data(char chr) {
 	size_t		 	size;
 	char 		 	*value;
 
-	if ( json_parse(&jparser, chr) ) {
+	if ( json_parse(&jparser, chr) > 0 ) {
 		parse_dump();
 
 		if ( (token = json_find_token(&jparser, "event")) ) {
