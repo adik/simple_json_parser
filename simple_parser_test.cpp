@@ -48,9 +48,11 @@ void recv_data(char chr) {
 	char 		 	*value;
 
 	if ( json_parse(&jparser, chr) > 0 ) {
+		//
 		parse_dump();
 
-		if ( (token = json_find_token(&jparser, "event")) ) {
+		//
+		if ( (token = json_find_tag_value_token(&jparser, "event")) ) {
 			size = json_token_size(&jparser, token);
 			value = (char*) malloc(size);
 			json_get_token(&jparser, token, value, size);
@@ -58,6 +60,11 @@ void recv_data(char chr) {
 			free(value);
 		}
 
+		value = json_get_tag_value(&jparser, "event");
+		cout << value << endl;
+		free(value);
+
+		// clean all
 		json_clean_tokens(&jparser);
 	}
 }

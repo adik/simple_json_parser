@@ -86,7 +86,8 @@ int  json_parse(json_parser_t *p, char chr);
 
 void 		 *json_get_token(json_parser_t *p, json_token_t *tok, char *buff, size_t len);
 size_t 		  json_token_size(json_parser_t *p, json_token_t *tok);
-json_token_t *json_find_token(json_parser_t *p, char *str);
+json_token_t *json_find_tag_value_token(json_parser_t *p, char *str);
+char 		 *json_get_tag_value(json_parser_t *p, char *tag);
 
 
 #endif /* Simple_Json_Parser_H_ */

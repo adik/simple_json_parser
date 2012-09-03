@@ -173,7 +173,7 @@ void *json_get_token(json_parser_t *p, json_token_t *tok, char *buff, size_t len
 /*
  * Return reference to the finded token
  */
-json_token_t *json_find_token(json_parser_t *p, char *str) {
+json_token_t *json_find_tag_value_token(json_parser_t *p, char *str) {
 
 	char *start_addr;
 
@@ -186,6 +186,25 @@ json_token_t *json_find_token(json_parser_t *p, char *str) {
 	for (int i=0; i<JSON_MAX_TOKENS; i += 2 ) {
 		if ( p->tokens[i].left == addr ) {
 			return &p->tokens[i];
+		}
+	}
+	return 0;
+}
+
+/*
+ * don't forget to free
+ */
+char *json_get_tag_value(json_parser_t *p, char *tag) {
+	json_token_t 	*token;
+	size_t		 	size;
+	char 		 	*value;
+
+	if ( (token = json_find_tag_value_token(p, tag)) ) {
+		size = json_token_size(p, token);
+		if ((value = (char*) malloc(size))) {
+			json_get_token(p, token, value, size);
+			return value;
+			//free(value);
 		}
 	}
 	return 0;
