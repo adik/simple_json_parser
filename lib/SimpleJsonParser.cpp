@@ -43,6 +43,8 @@ void json_clean_tokens(json_parser_t *p) {
 		p->tokens[i].right  = 0;
 	}
 	p->data[0] = '\0';
+	p->flags = {0,0};
+	p->level = 0;
 	p->pdata  = &p->data[0];
 	p->ptoken = &p->tokens[0];
 }
@@ -68,13 +70,25 @@ int json_parse(json_parser_t *p, char chr) {
 		else { goto skip; }
 	}
 
+	if (p->flags.skip_next) {
+		p->flags.skip_next = 0;
+        goto find;
+	}
+    else if (chr == '\\') {
+		if (p->flags.is_val) 
+			p->flags.skip_next = 1;
+		goto skip;
+	}
+
+	// p->flag &= ~JSON_SKIP_MASK;
+
 	// check if this not
 	if (chr == '"') {
-		p->type ^= JSON_FIELD_MASK;
+		p->flags.is_val ^= 1;
 	}
 
 	//if field closed
-	if ( (p->type & JSON_FIELD_MASK) == 0 ) {
+	if ( p->flags.is_val == 0 ) {
 
 		// calculate level
 		switch(chr) {
@@ -132,7 +146,6 @@ find:
 	// buffer overflow
 	if (json_fill_buff_index >= JSON_MAX_DATA_BUFFER)
 		goto error;
-
 	*p->pdata++ = chr;
 
 // wait next character
@@ -142,7 +155,7 @@ skip:
 // error
 error:
 	json_clean_tokens(p);
-	return 0;
+	return -1;
 
 // parse finished
 finish:
@@ -183,7 +196,7 @@ json_token_t *json_find_tag_value_token(json_parser_t *p, char *str) {
 	size_t addr = (size_t)start_addr + strlen(str);
 
 	// find token
-	for (int i=0; i<JSON_MAX_TOKENS; i += 2 ) {
+	for (int i=0; i < JSON_MAX_TOKENS; i += 2 ) {
 		if ( p->tokens[i].left == addr ) {
 			return &p->tokens[i];
 		}

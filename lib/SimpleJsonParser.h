@@ -45,32 +45,35 @@ typedef uint8_t byte;
 ******************************************************************************/
 
 // Max depth that could be parsed
+#ifndef JSON_MAX_DEPTH
 #define JSON_MAX_DEPTH	2
+#endif
 
 // a lenght of data buffer
-#define JSON_MAX_DATA_BUFFER 64
+#ifndef JSON_MAX_DATA_BUFFER
+#define JSON_MAX_DATA_BUFFER 128
+#endif
 
 // max available tokens
+#ifndef JSON_MAX_TOKENS
 #define JSON_MAX_TOKENS 12
+#endif
 
 
-
-
-#define JSON_FIELD_MASK 	_BV(0) // opened or closed field
-
-enum json_field_enum {
-	JSON_BLOCK_CLOSED = 0,
-	JSON_BLOCK_OPEN   = 1,
-};
 
 struct json_token_t {
 	size_t left;
 	size_t right;
 };
 
+struct json_flag_t {
+	byte is_val:1;
+	byte skip_next:1;
+};
+
 struct json_parser_t {
 	uint8_t			level;	// depth level
-	byte			type;	//
+	json_flag_t		flags;	//
 	size_t			ref[JSON_MAX_DEPTH];	// references array
 
 	json_token_t  	tokens[JSON_MAX_TOKENS];

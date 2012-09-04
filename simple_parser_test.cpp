@@ -48,6 +48,8 @@ void recv_data(char chr) {
 	char 		 	*value;
 
 	if ( json_parse(&jparser, chr) > 0 ) {
+
+		cout << "Parse OK";
 		//
 		parse_dump();
 
@@ -64,6 +66,10 @@ void recv_data(char chr) {
 		cout << value << endl;
 		free(value);
 
+		value = json_get_tag_value(&jparser, "data");
+		cout << value << endl;
+		free(value);
+
 		// clean all
 		json_clean_tokens(&jparser);
 	}
@@ -72,7 +78,14 @@ void recv_data(char chr) {
 /***********************************************************/
 
 int main() {
-	const char json[] = "{\"event\":\"test\",\"data\":\"PRIVET\",\"channel\":\"channel_1\"}";
+
+	/*
+	{"event":"pusher:connection_established","data":"{\"socket_id\":\"11796.609249\"}"}�
+	{"event":"pusher:error","data":"{\"code\":null,\"message\":\"Auth info required to subscribe to private-cmd\"}"}�
+	*/
+
+	//const char json[] = "{\"event\":\"pusher:error\",\"data\":\"{\"code\":null,\"message\":\"Auth info required to subscribe to private-cmd\"}\"}";
+	const char json[] = "{\"event\":\"pusher:error\",\"data\":\"{\\\"code\\\":null,\\\"message\\\":\\\"Auth info required to subscribe to private-cmd\\\"}\"}";
 	const char *pt = json;
 
 	json_init(&jparser);
@@ -82,14 +95,16 @@ int main() {
 		pt++;
 	}
 
-	pt = &json[0];
+	json_clean_tokens(&jparser);
+	pt = " {\"event\":\\\"pusher:error\\\",\"data\":\"{\\\"code\\\":null,\\\"message\\\":\\\"Auth info required to subscribe to private-cmd\\\"}\"}";
 
 	while (*pt) {
 		recv_data(*pt);
 		pt++;
 	}
 
-	pt = &json[0];
+	json_clean_tokens(&jparser);
+	pt = " {\"event\":\"pusher:error\"}";
 
 	while (*pt) {
 		recv_data(*pt);
