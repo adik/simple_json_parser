@@ -1,9 +1,26 @@
 /*****************************************************************************/
 
-This library provides a simple JSON Parser that may be useful in Arduino projects.
-
+ This library provides a simple JSON Parser 
+ that may be useful in Arduino projects.
 
 
  Usage:
 
-    
+    json_parser_t parser;
+    json_init(&parser);
+
+    while ((char c = read())) {
+       
+        // string parsed
+        if (json_parse(&parser, chr) > 0) {
+
+            // get pointer
+            char *value = json_get_tag_value(&parser, "event");
+
+            // clean garbage
+            free(value);
+
+            // clean 
+            json_clean_tokens(&parser);
+        }
+    } 
