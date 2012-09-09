@@ -43,7 +43,8 @@ void json_clean_tokens(json_parser_t *p) {
 		p->tokens[i].right	= 0;
 	}
 	p->data[0] = '\0';
-	p->flags = {0,0};
+	p->flags.is_val = 0;
+	p->flags.skip_next = 0;
 	p->level = 0;
 	p->pdata  = &p->data[0];
 	p->ptoken = &p->tokens[0];
